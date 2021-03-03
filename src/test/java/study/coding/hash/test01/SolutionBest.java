@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 
-public class BestSolution {
+public class SolutionBest {
 
     @Test
     void test1() {

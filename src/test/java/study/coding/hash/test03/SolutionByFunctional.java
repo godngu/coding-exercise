@@ -1,12 +1,17 @@
 package study.coding.hash.test03;
 
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.reducing;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-public class Solution {
+public class SolutionByFunctional {
 
     @Test
     void test1() {
@@ -45,24 +50,11 @@ public class Solution {
      */
     public int solution(String[][] clothes) {
 
-        Map<String, Integer> map = new HashMap<>();
-        for (String[] cloth : clothes) {
-            String key = cloth[1];
-            if (map.containsKey(key)) {
-                map.replace(key, map.get(key) + 1);
-            } else {
-                map.put(key, 1);
-            }
-        }
-
-        int answer = 1;
-        for (Integer value : map.values()) {
-            answer *= (value + 1);
-        }
-
-        answer -= 1;
-        System.out.println(answer);
-        return answer;
+        return Arrays.stream(clothes)
+            .collect(groupingBy(p -> p[1], mapping(p -> p[0], counting())))
+            .values()
+            .stream()
+            .collect(reducing(1L, (x, y) -> x * (y + 1))).intValue() - 1;
     }
 
 }
