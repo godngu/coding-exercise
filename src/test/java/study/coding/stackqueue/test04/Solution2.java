@@ -3,11 +3,14 @@ package study.coding.stackqueue.test04;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-public class Solution {
+public class Solution2 {
 
     @Test
     void test1() {
@@ -23,12 +26,12 @@ public class Solution {
         assertThat(solution(priorities, location)).isEqualTo(5);
     }
 
-    @Test
-    void test3() {
-        int[] priorities = {3,2,4,1};// 3241 2413 4132... => 4(2) 3(0) 2(1) 1(2)
-        int location = 1;
-        assertThat(solution(priorities, location)).isEqualTo(3);
-    }
+    /*
+     * A(2) B(1) C(3) D(2)
+     * 1 => A(2) : B(1) C(3) D(2) -> B(1) C(3) D(2) A(2)
+     * 2 => B(1) : C(3) D(2) A(2) -> C(3) D(2) A(2) B(1)
+     * 3 => C(3) : D(2) A(2) B(1) -> C(3) D(2) A(2) B(1) :그대로 (2, 3, 0, 1)
+     */
 
     /**
      *
@@ -43,31 +46,15 @@ public class Solution {
 
         int answer = 0;
 
-        ArrayList<Print> result = new ArrayList<>();
         Queue<Print> printQueue = toQueue(priorities);
+        ArrayList<Print> printList = new ArrayList<>(printQueue);
 
-        while (true) {
-            ArrayList<Print> printList = new ArrayList<>(printQueue);
+        List<Print> sorted = printList.stream()
+            .sorted(Comparator.reverseOrder())
+            .collect(Collectors.toList());
 
-            for (int i = 0; i < printList.size(); i++) {
-                Print current = printList.get(i);
-
-                for (int j = i+1; j < printList.size(); j++) {
-                    Print next = printList.get(j);
-
-                    if (next.isGreaterThan(current)) {
-                        printQueue.add(printQueue.poll());
-                        break;
-                    }
-                }
-            }
-            result.add(printQueue.poll());
-
-            if (result.size() == priorities.length) break;
-        }
-
-        for (int i = 0; i < result.size(); i++) {
-            if (result.get(i).getLocation() == location) {
+        for (int i = 0; i < sorted.size(); i++) {
+            if (location == sorted.get(i).getLocation()) {
                 answer = i + 1;
                 break;
             }
@@ -82,7 +69,7 @@ public class Solution {
         return queue;
     }
 
-    static class Print {
+    static class Print implements Comparable<Print> {
         private final int priority;
         private final int location;
 
@@ -104,10 +91,13 @@ public class Solution {
         }
 
         @Override
-        public String toString() {
-            return "Print{" +
-                "priority=" + priority +
-                '}';
+        public int compareTo(Print o) {
+
+            if (this.priority > o.getPriority())
+                return 1;
+            else
+                return -1;
+
         }
     }
 }
