@@ -12,22 +12,49 @@ public class Solution {
     @Test
     void test1() {
         int[] priorities = {2,1,3,2};
-        int location = 2;
-        assertThat(solution(priorities, location)).isEqualTo(1);
+        assertThat(solution(priorities, 2)).isEqualTo(1);
     }
 
     @Test
     void test2() {
         int[] priorities = {1,1,9,1,1,1};
-        int location = 0;
-        assertThat(solution(priorities, location)).isEqualTo(5);
+        assertThat(solution(priorities, 0)).isEqualTo(5);
+        assertThat(solution(priorities, 4)).isEqualTo(3);
     }
 
     @Test
     void test3() {
-        int[] priorities = {3,2,4,1};// 3241 2413 4132... => 4(2) 3(0) 2(1) 1(2)
-        int location = 1;
-        assertThat(solution(priorities, location)).isEqualTo(3);
+        int[] priorities = {3,2,4,1};
+        assertThat(solution(priorities, 1)).isEqualTo(3);
+    }
+
+    @Test
+    void test4() {
+        int[] priorities = {1,1,1,1,1,1,1};
+        assertThat(solution(priorities, 0)).isEqualTo(1);
+        assertThat(solution(priorities, 3)).isEqualTo(4);
+    }
+
+    @Test
+    void test5() {
+        int[] priorities = {5,4,3,2,1};
+        assertThat(solution(priorities, 0)).isEqualTo(1);
+        assertThat(solution(priorities, 2)).isEqualTo(3);
+    }
+
+    /**
+     * [1]  [2]  [3]  [4]  [5]
+     * ------------------------
+     * 2(0) 1(1) 2(2) 1(3) 2(4)
+     * 2(0) 2(2) 1(3) 2(4) 1(1)
+     * 2(0) 2(2) 2(4) 1(1) 1(3)
+     */
+    @Test
+    void test6() {
+        int[] priorities = {2,1,2,1,2};
+        assertThat(solution(priorities, 0)).isEqualTo(1);
+        assertThat(solution(priorities, 1)).isEqualTo(4);
+        assertThat(solution(priorities, 3)).isEqualTo(5);
     }
 
     /**
@@ -46,10 +73,13 @@ public class Solution {
         ArrayList<Print> result = new ArrayList<>();
         Queue<Print> printQueue = toQueue(priorities);
 
+        boolean isBiggest;// 2 1 3 2
+
         while (true) {
             ArrayList<Print> printList = new ArrayList<>(printQueue);
 
             for (int i = 0; i < printList.size(); i++) {
+                isBiggest = true;
                 Print current = printList.get(i);
 
                 for (int j = i+1; j < printList.size(); j++) {
@@ -57,9 +87,12 @@ public class Solution {
 
                     if (next.isGreaterThan(current)) {
                         printQueue.add(printQueue.poll());
+                        isBiggest = false;
                         break;
                     }
                 }
+                if (isBiggest)
+                    break;
             }
             result.add(printQueue.poll());
 
@@ -107,6 +140,7 @@ public class Solution {
         public String toString() {
             return "Print{" +
                 "priority=" + priority +
+                ", location=" + location +
                 '}';
         }
     }
