@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import org.junit.jupiter.api.Test;
 
+/**
+ * 채점에 성공한 코드
+ */
 public class Solution {
 
     @Test

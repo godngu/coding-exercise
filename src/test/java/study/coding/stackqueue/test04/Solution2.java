@@ -10,6 +10,10 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
+/**
+ * 기본 예제는 통과하지만 제출시 실패하는 코드
+ * 즉 버그가 있다는 의미임
+ */
 public class Solution2 {
 
     @Test
