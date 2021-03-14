@@ -30,7 +30,10 @@ public class Solution2 {
     public int solution(int[] scoville, int K) {
         int answer = 0;
 
-        PriorityQueue<Integer> q = toQueue(scoville);
+        PriorityQueue<Integer> q = new PriorityQueue<>();
+        for (int i : scoville) {
+            q.add(i);
+        }
 
         while (q.size() > 1) {
             answer++;
@@ -48,11 +51,5 @@ public class Solution2 {
         }
 
         return -1;
-    }
-
-    private PriorityQueue<Integer> toQueue(int[] arr) {
-        PriorityQueue<Integer> queue = new PriorityQueue<>();
-        Arrays.stream(arr).sorted().forEach(i -> queue.add(i));
-        return queue;
     }
 }
