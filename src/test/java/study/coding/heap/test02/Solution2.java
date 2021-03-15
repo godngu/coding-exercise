@@ -2,19 +2,16 @@ package study.coding.heap.test02;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 /**
- * 실패....
+ * SJF 알고리즘 구현 문제이다.
  */
-public class Solution {
+public class Solution2 {
 
     @Test
     void test01() {
@@ -174,112 +171,49 @@ public class Solution {
     }
 
     public int solution(int[][] jobs) {
-        Queue<Job> q = toQueue(jobs);
 
+        LinkedList<Job> waiting = new LinkedList<>();
+        PriorityQueue<Job> workingQueue = new PriorityQueue<>(Comparator.comparingInt(o -> o.workingTime));
+
+        for (int[] job : jobs) {
+            waiting.offer(new Job(job[0], job[1]));
+        }
+
+        Collections.sort(waiting, Comparator.comparingInt(o -> o.requestTime));
+
+        int currentTime = waiting.peek().requestTime;
         int sum = 0;
-        int processing = 0;
-        int pastBegin = 0;
-        boolean isFirst = true;
-        int totalRunning = 0;
+        int processingTime = 0;
+        int completedCount = 0;
 
-        while (!q.isEmpty()) {
-            Job job = q.poll();
-
-            int begin = job.begin;
-            int running = job.running;
-
-            if (isFirst) {
-                begin = 0;
-                totalRunning += begin;
-                isFirst = false;
+        while (completedCount < jobs.length) {
+            // 요청 시간이 현재시간 이하인 Job을 작업큐(workingQueue)로 옮긴다.
+            while (!waiting.isEmpty() && waiting.peek().requestTime <= currentTime) {
+                // pollFirst(): LinkedList의 첫번째 요소를 반환하면서 제거한다.
+                workingQueue.offer(waiting.pollFirst());
             }
 
-            if (begin > totalRunning) {
-                totalRunning = begin + running;
-                processing = running;
+            if (!workingQueue.isEmpty()) {
+                Job job = workingQueue.poll();
+                currentTime += job.workingTime;
+                processingTime = currentTime - job.requestTime;
+                sum += processingTime;
+                completedCount++;
             } else {
-                totalRunning += running;
-                processing += (running - begin + pastBegin);
+                currentTime++;
             }
-
-            pastBegin = job.begin;
-
-            sum += processing;
         }
 
-        return sum / jobs.length;
+        return sum / completedCount;
     }
 
-    /**
-     * 가장 처음 시작하는 job을 찾아야 한다.
-     * running으로 정렬을 하게 되면 가장 처음 시작하는 Job이 중간에 위치하게 되어 문제가 된다.
-     */
-    private Queue<Job> toQueue(int[][] arr) {
-        List<Job> list = new ArrayList<>();
-        for (int i = 0; i < arr.length; i++) {
-            list.add(new Job(arr[i][0], arr[i][1]));
-        }
+    class Job {
+        private final int requestTime;
+        private final int workingTime;
 
-        Comparator<Job> comparator = new Comparator<Job>() {
-            @Override
-            public int compare(Job o1, Job o2) {
-                if (o1.begin > o2.begin)
-                    return 1;
-                else if (o1.begin == o2.begin)
-                    return 0;
-                else
-                    return -1;
-            }
-        };
-
-        Queue<Job> q = new LinkedList<>();
-        List<Job> sorted = list.stream().sorted(comparator).collect(Collectors.toList());
-        for (Job job : sorted) {
-            q.add(job);
-        }
-        Job firstJob = q.poll();
-
-        PriorityQueue<Job> pq = new PriorityQueue<>();
-        while (!q.isEmpty()) {
-            pq.add(q.poll());
-        }
-
-        q.add(firstJob);
-        while (!pq.isEmpty()) {
-            q.add(pq.poll());
-        }
-
-
-        return q;
-    }
-
-
-    static class Job implements Comparable<Job> {
-        private final int begin;
-        private final int running;
-
-        public Job(int begin, int running) {
-            this.begin = begin;
-            this.running = running;
-        }
-
-        @Override
-        public int compareTo(Job o) {
-
-            if (this.running > o.running)
-                return 1;
-            else if (this.running == o.running)
-                return 0;
-            else
-                return -1;
-        }
-
-        @Override
-        public String toString() {
-            return "Process{" +
-                "begin=" + begin +
-                ", running=" + running +
-                '}';
+        public Job(int requestTime, int workingTime) {
+            this.requestTime = requestTime;
+            this.workingTime = workingTime;
         }
     }
 }
