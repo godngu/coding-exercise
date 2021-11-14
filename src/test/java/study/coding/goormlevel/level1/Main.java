@@ -500,6 +500,7 @@ public class Main {
 
     /**
      * [런타임 에러 발생...]
+     *
      * DFS(Depth-First Search, 깊이 우선 탐색)
      * 참고: https://loosie.tistory.com/175?category=982577
      * 추들이 낼 수 있는 조합을 result에 저장한다.
@@ -543,5 +544,61 @@ public class Main {
         dp(weight, result, idx+1, num);
         dp(weight, result, idx+1, Math.abs(num - weight[idx]));
     }
+
+    /**
+     * 타임아웃 오류 발생 (50점)
+     */
+    @Test
+    void 쇼핑몰() {
+        int n = 10, k = 3;
+        int[][] arr = {
+            {123, 4}, {21, 5}, {34, 14}, {56, 1}, {45, 7},
+            {723, 5}, {55, 7}, {13, 5}, {910, 10}, {73, 3}
+        };
+
+        Queue<int[]> carts = new LinkedList<>();
+        for (int[] a : arr) {
+            carts.add(a);
+        }
+
+        int[][] counters = new int[k][2];
+        List<Integer> finished = new ArrayList<>();
+
+        int[] empty = {0, 0};
+
+        while (finished.size() < n) {
+            // 계산대 채우기
+            for (int i = 0; i < k; i++) {
+                if (counters[i][1] == 0 && !carts.isEmpty()) {
+                    counters[i] = carts.poll();
+                }
+            }
+
+            int min = 1;
+            for (int[] counter : counters) {
+                min = counter[1] < min && counter[1] > 0 ? counter[1] : min;
+            }
+
+
+            // 나갈때는 인덱스가 큰 순서대로 나간다.
+            for (int i = k - 1; i >= 0; i--) {
+                counters[i][1] = counters[i][1] - min;
+
+                // 계산이 끝났으면
+                if (counters[i][0] > 0 && counters[i][1] == 0) {
+                    finished.add(counters[i][0]);// 회원 번호만 담는다.
+                    counters[i] = empty; // 카운터 초기화
+                }
+            }
+        }
+
+        long result = 0;
+        for (int i = 0; i < finished.size(); i++) {
+            result += ((i+1) * finished.get(i));
+        }
+
+        assertThat(result).isEqualTo(13900);
+    }
+
 }
 
