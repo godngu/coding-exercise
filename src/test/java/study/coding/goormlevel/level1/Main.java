@@ -8,9 +8,14 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
@@ -600,5 +605,186 @@ public class Main {
         assertThat(result).isEqualTo(13900);
     }
 
+    @Test
+    void 단어의_개수_세기() {
+        {
+            String input = "Goorm  Edu";
+            int count = new StringTokenizer(input).countTokens();
+            assertThat(count).isEqualTo(2);
+        }
+        {
+            String input = " goo r m e du";
+            int count = new StringTokenizer(input).countTokens();
+            assertThat(count).isEqualTo(5);
+        }
+    }
+
+    @Test
+    void 네_수의_곱() {
+        String input = "10 20 30 40";
+        int[] nums = toIntArr(input);
+        System.out.println(mul(mul(nums[0], nums[1]), mul(nums[2], nums[3])));
+    }
+
+    private int mul(int a, int b) {
+        return a * b;
+    }
+
+    /**
+     * 5
+     * 2.699 1.356 3.711
+     * 4.254 1.479 3.948
+     * 1.214 2.681 4.982
+     * 1.674 1.197 2.647
+     * 1.506 2.383 3.577
+     * 참고: https://jun01.tistory.com/7?category=791891
+     */
+    @Test
+    void 자동문() {
+       String input = "2.699 1.356 3.711";
+        double[] nums = Arrays.stream(input.split("\\s")).mapToDouble(s -> Double.valueOf(s)).toArray();
+        double l = nums[0], a = nums[1], v = nums[2];   // 자동문 길이, 자동문 가속도, 적외선 속도
+
+        double time = Math.sqrt(l * 2 / a);
+        double distance = v * time;
+
+        System.out.println(String.format("%.2f", distance));
+    }
+
+    /**
+     * 오류 발생
+     * -1 0 1
+     * 2 2
+     * -2 -2
+     * 0 0
+     * -1 -2
+     * 1 2
+     */
+    @Test
+    void 파도센서() {
+//        int[] w = {-1, 0, 1};
+//        int[][] sensors = {{2, 2}, {-2, -2}, {0, 0}, {-1, -2}, {1, 2}};
+        int[] w = {-21, 6, 19};
+        int[][] sensors = {{13, 2}, {-4, -9}, {-12, -13}, {13, 19}, {-15, -9}};
+
+        // x범위: x-r <= x <= x+r
+        // y범위: y-r <= y <= y+r
+        int _x = 0, _y = 1;
+        int x = w[_x], y = w[_y], r = w[2];
+
+        int minIdx = Integer.MAX_VALUE,
+            xMinDiff = Integer.MAX_VALUE,
+            yMinDiff = Integer.MAX_VALUE,
+            minDiff = Integer.MAX_VALUE;
+
+        for (int i = 0; i < sensors.length; i++) {
+            int[] s = sensors[i];
+
+            if (x-r <= s[_x] && s[_x] <= x+r) {
+                if (y-r <= s[_y] && s[_y] <= y+r) {
+                    // 센서에 닿는다.
+                    System.out.println(String.format("(%d, %d)", s[_x], s[_y]));
+
+                    int xDiff = Math.abs( Math.abs(x) - Math.abs(s[_x]) );
+                    int yDiff = Math.abs( Math.abs(y) - Math.abs(s[_y]) );
+
+                    if (xDiff + yDiff < minDiff) {
+                        minIdx = i;
+                        xMinDiff = xDiff;
+                        yMinDiff = yDiff;
+                        minDiff = xDiff + yDiff;
+                        continue;
+                    }
+
+                    if (xDiff + yDiff == xMinDiff + yMinDiff) {
+                    }
+                }
+            }
+        }
+        int result = minDiff == Integer.MAX_VALUE ? -1 : minIdx + 1;
+        System.out.println(result);
+    }
+
+    private static final int SCISSORS = 1, ROCK = 2, PAPER = 3;
+
+    @Test
+    void 가위바위보() {
+        String[] strings = {"1", "1", "3", "3", "1"};
+
+        Map<Integer, Long> group = Arrays.stream(strings).collect(Collectors.groupingBy(
+            s -> Integer.parseInt(s), Collectors.counting()
+        ));
+
+        if (group.keySet().size() != 2) {
+            System.out.println(0);
+            return;
+        }
+
+        Integer[] keys = group.keySet().toArray(new Integer[0]);
+
+        int result = game1(keys[0], keys[1]);
+        System.out.println(result == 1 ? group.get(keys[0]) : group.get(keys[1]));
+    }
+
+    private int game1(int a, int b) {
+        final int DRAW = 0, WIN = 1, LOSE = -1;
+
+        if (a == b) return DRAW;
+
+        switch (a) {
+            case SCISSORS:
+                return b == ROCK ? LOSE : WIN;
+            case ROCK:
+                return b == PAPER ? LOSE : WIN;
+            case PAPER:
+                return b == SCISSORS ? LOSE : WIN;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    @Test
+    void 특정_문자_개수_구하기() {
+        String input = "I am a boy";
+        String input2 = "a";
+        char target = input2.charAt(0);
+
+        char[] chars = input.toCharArray();
+        int cnt = 0;
+        for (char c : chars) {
+            if (target == c) cnt++;
+        }
+        System.out.println(cnt);
+    }
+
+    /**
+     * 테스트는 통과했는데 제출에서 오류가 있다는데... 모르겠네
+     */
+    @Test
+    void 헷갈리는_작대기() {
+//        String input = "We wi1l we wi|I rock you!";
+//        String input = "xl30gjdhaI1gdfkl|dlh;(rn4ky1kgndlIIldfl|ld|dBjfHd";
+        String input = "~]I=-f{UX5%X<]`kQl8?O^UDflq=2`;1LM7a/74([|8qAO<.CJY>i_'\\n*A-q(QWFgBL+}RU(ZITZL:\\0?FWb1+bUeP0/Y%\"1IB\\";
+        char[] inputChars = input.toCharArray();
+
+        Map<Character, Integer> map = new HashMap<>();
+
+        char[] chars = {'1', 'I', 'l', '|'};
+        for (char inputChar : inputChars) {
+            for (char c : chars) {
+                if (inputChar == c) {
+                    if (map.containsKey(c)) {
+                        map.put(c, map.get(c) + 1);
+                    } else {
+                        map.put(c, 1);
+                    }
+                    break;
+                }
+            }
+        }
+        for (Integer value : map.values()) {
+            System.out.println(value);
+        }
+    }
 }
 
