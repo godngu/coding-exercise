@@ -10,7 +10,7 @@ public class Main {
 
     @Test
     void name() {
-        solution(5);
+        solution(11);
     }
 
     private void solution(int n) {

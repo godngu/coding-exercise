@@ -1,9 +1,12 @@
-package study.coding;
+package study.coding.useful;
 
 import static java.util.UUID.randomUUID;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * 경우의 수 구하기
+ */
 public class Combination {
 
     /**
