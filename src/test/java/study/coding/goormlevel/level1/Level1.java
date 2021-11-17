@@ -26,7 +26,7 @@ import sun.reflect.generics.tree.BooleanSignature;
 //import java.util.*;
 //import java.lang.*;
 
-public class Main {
+public class Level1 {
 
     public static void main(String[] args) throws Exception {
 //        Scanner sc = new Scanner(System.in);

@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import org.junit.jupiter.api.Test;
 
-public class Main {
+public class Level2 {
 
     private String[] toStringArr(String input) {
         return input.split("\\s");
