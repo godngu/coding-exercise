@@ -1,7 +1,6 @@
 package study.coding.goormlevel.level5;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.array;
 
 import java.util.LinkedList;
 import java.util.Queue;
